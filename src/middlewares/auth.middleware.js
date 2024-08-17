@@ -3,9 +3,7 @@ import { User } from "../models/user.model.js";
 
 const verifyUser = async (req, res, next) => {
     try {
-        console.log("Headers received:", req.headers); // Log headers
         const token = req.cookies?.accessToken;
-        console.log("Access Token:", token); // Log the access token
 
         if (!token) {
             return res.status(401).json({message: 'Unauthorized User. Token not found'});

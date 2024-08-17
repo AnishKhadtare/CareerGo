@@ -3,6 +3,8 @@ import cors from "cors";
 import cookieParser from 'cookie-parser';
 
 import candidateRoutes from "./routes/candidate.routes.js";
+import recruiterRoutes from "./routes/recruiter.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -19,5 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/candidate", candidateRoutes);
+app.use("/recruiter", recruiterRoutes);
+app.use("/user", userRoutes);
+
 
 export default app;
