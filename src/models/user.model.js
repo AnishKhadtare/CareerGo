@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     refreshToken : {
         type : String,
     },
-});
+}, {timestamps : true});
 
 userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password);

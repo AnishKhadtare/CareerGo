@@ -1,31 +1,6 @@
 import mongoose from "mongoose";
 
 const recruiterPostSchema = new mongoose.Schema({
-    firstName : {
-        type : String,
-        required : true,
-    },
-    lastName : {
-        type : String,
-        required : true,
-    },
-    email : {
-        type : String,
-        required : true,
-        unique : true,
-    },
-    designation : {
-        type : String,
-        required : true,
-    },
-    countryCode : {
-        type : String,
-        required : true,
-    },
-    phone : {
-        type : String,
-        required : true,
-    },
     isFreelancer: {
         type: Boolean,
         required: true,
@@ -163,6 +138,6 @@ const recruiterPostSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
     },
-});
+},{timestamps : true,});
 
 export const RecruiterPostSchema = mongoose.model("RecruiterPostSchema", recruiterPostSchema);

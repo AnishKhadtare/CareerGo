@@ -1,51 +1,45 @@
-import { RecruiterPostSchema } from "../models/recruiterPost.model.js";
+import {User} from "../models/user.model.js";
+import { RecruiterProfile } from "../models/recruiterProfile.model.js";
 
-const postRecruitment = async(req, res) => {
-    try {
-        const{
-            firstName, lastName, email, designation, countryCode, phone, isFreelancer,
-            personName, organizationName, description, city, industry, numberOfEmployees,
-            isInternship, internshipRole, jobRole, requiredMinExperience, requiredMaxExperience,
-            skillsRequired, workType, workSchedule, numberOfOpenings, internshipCommencement, 
-            startDate, internshipDuration, durationFormatType,internshipResponsiblities,
-            jobDescription, whoCanApply, stipendType, stipendCurrency, stipendAmount, 
-            maxLimitNegotiableStipend, salaryCurrency, salaryMin, salaryMax, perks,
-            isPrePlacementOfferAvailable, assesmentQuestion
+const recruiterCreateProfile = async (req, res) => {
+    try{
+        const { 
+            firstName, lastName, email,
+            designation, countryCode, phone
         } = req.body;
 
-        const user = req.user;
-
-        const recruitmentPostExists =  await RecruiterPostSchema.findOne({
-            jobRole,
-            skillsRequired,
-            requiredMinExperience,
-            requiredMaxExperience,
-            internshipCommencement,
-        })
-
-        if(recruitmentPostExists){
-            return res.status(400).json({message: "Recruitment post already exists."});
+        if(
+            !firstName || !lastName || !email ||
+            !designation || !countryCode || !phone
+        ){
+            return res.status(400).json({message: "Please fill in all fields."});
         }
-    
-        const postedRecruitment = await RecruiterPostSchema.create({
-            firstName, lastName, email, designation, countryCode, phone, isFreelancer,
-            personName, organizationName, description, city, industry, numberOfEmployees,
-            isInternship, internshipRole, jobRole, requiredMinExperience, requiredMaxExperience,
-            skillsRequired, workType, workSchedule, numberOfOpenings, internshipCommencement,
-            startDate, internshipDuration, durationFormatType,internshipResponsiblities,
-            jobDescription, whoCanApply, stipendType, stipendCurrency, stipendAmount,
-            maxLimitNegotiableStipend, salaryCurrency, salaryMin, salaryMax, perks,
-            isPrePlacementOfferAvailable, assesmentQuestion, userId : user._id
+        const emailAddress = req.user.email;
+
+        const user = await User.find({emailAddress});
+
+        if(!user){
+            return res.status(400).json({message: "Email does not exists. Pls register to create profile"});
+        }
+
+        const userId = req.user._id; 
+        
+        const userProfileExists = await RecruiterProfile.findOne({userId});
+
+        if(userProfileExists){
+            return res.status(400).json({message: "Profile is already created.", userProfileExists});
+        }
+
+        const createdProfile = await RecruiterProfile.create({
+            firstName, lastName, email, designation, 
+            countryCode, phone, userId : userId,
         });
 
-        if(!postedRecruitment){
-            return res.status(400).json({message: "Failed to post recruitment"})
-        }
-        res.status(200).json({message : "Recruitment post created successfully", postedRecruitment});
-    }
+        res.status(200).json({message : "Recruiter profile created successfully", createdProfile});
+    } 
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(400).json({message: `Error occurred during candidate profile creation : ${error.message}.`});
     }
 }
 
-export {postRecruitment};
+export {recruiterCreateProfile};

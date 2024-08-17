@@ -12,7 +12,6 @@ const candidateProfileSchema = new mongoose.Schema({
     email : {
         type : String,
         required : true,
-        unique : true,
     },
     contactNumber : {
         countryCode:{
@@ -138,6 +137,6 @@ const candidateProfileSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
     },
-});
+},{timestamps : true,});
 
 export const CandidateProfile = mongoose.model("CandidateProfile", candidateProfileSchema); 
