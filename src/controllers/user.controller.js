@@ -1,4 +1,8 @@
 import { User } from "../models/user.model.js";
+import { RecruiterProfile } from "../models/recruiterProfile.model.js";
+import { RecruiterPostSchema } from "../models/recruiterPost.model.js";
+import { CandidateProfile } from "../models/candidateProfile.model.js";
+
 import bcrypt from "bcrypt";
 
 const generateRefreshAccessToken = async (userId) => {
@@ -79,4 +83,65 @@ const userRegister = async(req, res) => {
     }
 }
 
-export {userLogin, userRegister};
+const userLogout = async(req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.user._id, {
+            $set:{
+                refreshToken : undefined,
+            },
+        },{new : true,});
+        return res.status(200).json({
+            message : "User Logout Successfully",
+        });
+    }
+    catch(error){
+        return res.status(400).json({message: `Error occurred during logout : ${error.message}`});
+    }
+}
+
+const userAccountDelete = async(req, res) => {
+    try{
+        const user = req.user;
+        const userId = req.user._id;
+        if(user.role === "Recruiter"){
+            await RecruiterProfile.deleteOne({ userId: userId });
+            await RecruiterPostSchema.deleteMany({ userId: userId });
+        }
+        if(user.role === "Candidate"){
+            await CandidateProfile.deleteOne({ userId: userId });
+        }
+        await User.findByIdAndDelete(userId);
+    }
+    catch(error){
+        return res.status(400).json({message: `Error occurred during account deletion : ${error.message}`});
+    }
+}
+
+const changePassword = async(req, res) => {
+    try{
+        const userId = req.user._id;
+        const {oldPassword, newPassword, retypePassword} = req.body;
+        if(!oldPassword || !newPassword || !retypePassword){
+            return res.status(400).json({message: "Please fill all fields."});
+        }
+        if(newPassword !== retypePassword){
+            return res.status(400).json({message: "Passwords do not match."});
+        }
+        const user = await User.findById(userId);
+        const isValidPassword = await bcrypt.compare(oldPassword, user.password);
+        if(!isValidPassword){
+            return res.status(400).json({message: "Old password is incorrect."});
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, {
+            $set:{
+                password : await bcrypt.hash(newPassword, 10),
+            },
+        });
+        return res.status(200).json({message: "Password changed successfully.", updatedUser});
+    }
+    catch(error){
+        return res.status(400).json({message: `Error occurred during password change : ${error.message}`});
+    }
+}
+
+export {userLogin, userRegister, userLogout, userAccountDelete, changePassword};

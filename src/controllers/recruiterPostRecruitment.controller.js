@@ -15,11 +15,10 @@ const postRecruitment = async(req, res) => {
         const user = req.user;
 
         const recruitmentPostExists =  await RecruiterPostSchema.findOne({
-            $or:[
-                {internshipRole},
-                {jobRole},
-            ],                
-            skillsRequired,
+            jobRole,
+            organizationName,
+            personName,
+            internshipRole
         })
 
         if(recruitmentPostExists){

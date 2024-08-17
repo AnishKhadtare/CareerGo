@@ -42,4 +42,30 @@ const recruiterCreateProfile = async (req, res) => {
     }
 }
 
-export {recruiterCreateProfile};
+const updateProfile = async(req, res) => {
+    try {
+        const {firstName, lastName, email, designation, countryCode, phone} = req.body;
+        if(!firstName || !lastName || !email || !designation || !countryCode || !phone){
+            return res.status(400).json({message: "Please fill in all fields to be updated."});
+        }
+        const recruiterProfile = await RecruiterProfile.findOne({email});
+        if(!recruiterProfile){
+            return res.status(400).json({message: "Profile does not exists."});
+        }
+        const updatedProfile = await RecruiterProfile.findByIdAndUpdate(recruiterProfile._id, {
+            $set:{
+                firstName, lastName, email, designation, countryCode, phone
+            }
+        }, {new: true});
+            
+        if(!updatedProfile){
+            return res.status(400).json({message: "Failed to update profile."});
+        }
+        res.status(200).json({message : "Recruiter profile updated successfully", updatedProfile});
+    }
+    catch (error) {
+        return res.status(400).json({message: `Error occurred during candidate profile update : ${error.message}.`});
+    }
+}
+
+export {recruiterCreateProfile, updateProfile};
