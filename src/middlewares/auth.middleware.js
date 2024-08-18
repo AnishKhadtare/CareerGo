@@ -28,5 +28,38 @@ const verifyUser = async (req, res, next) => {
     }
 }
 
+const verifyCandidate = async (req, res, next) => {
+    try{
+        const userRole = req.user.role;
+        if(userRole !== 'Candidate'){
+            return res.status(403).json({
+                message : "Forbidden. Only Candidate can access this route",
+            });
+        }
+        next();
+    }
+    catch(error){
+        return res.status(404).json({
+            message : `Invalid user. Authentication Failed in verifyCandidate middleware ! ERROR : ${error.message}`
+        });
+    }
+}
 
-export {verifyUser};
+const verifyRecruiter = async (req, res, next) => {
+    try{
+        const userRole = req.user.role;
+        if(userRole !== 'Recruiter'){
+            return res.status(403).json({
+                message : "Forbidden. Only Recruiter can access this route",
+            });
+        }
+        next();
+    }
+    catch(error){
+        return res.status(404).json({
+            message : `Invalid user. Authentication Failed in verifyRecruiter middleware ! ERROR : ${error.message}`
+        });
+    }
+}
+
+export {verifyUser, verifyCandidate, verifyRecruiter};

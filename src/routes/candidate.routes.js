@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { candidateCreateProfile } from "../controllers/candidate.controller.js";
-import { verifyUser } from "../middlewares/auth.middleware.js";
+import { verifyCandidate, verifyUser } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/create/profile").post(verifyUser, candidateCreateProfile);
+router.route("/create/profile").post(verifyUser, verifyCandidate, candidateCreateProfile);
 
 export default router;
