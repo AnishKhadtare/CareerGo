@@ -133,6 +133,125 @@ const candidateProfileSchema = new mongoose.Schema({
         required : true,
         enum : ["In-Office", "Work from home"],
     },
+    dateOfBirth : {
+        type : String,
+        required: true,
+    },
+    preferedLocations : [{
+        type : String,
+    }],
+    education : {
+        pgDegree : {
+            degree: {
+                type: String,  
+            },
+            institution: {
+                type: String,  
+            },
+            graduationYear: {
+                type: Number,  
+            },
+            studyType: {
+                type: String, 
+            },
+        },
+        ugDegree : {
+            degree: {
+                type: String, 
+            },
+            institution: {
+                type: String, 
+            },
+            graduationYear: {
+                type: Number,
+            },
+            studyType: {
+                type: String,
+            },
+        },
+        classXII:{
+            examBoard : {
+                type : String,
+            },
+            percentage : {
+                type : Number,
+            },
+            passingYear : {
+                type : Number,
+            },
+        },
+        classX:{
+            examBoard : {
+                type : String,
+            },
+            percentage : {
+                type : Number,
+            },
+            passingYear : {
+                type : Number,
+            },
+        },
+    },
+    profileSummary :{ 
+        type : String,
+    },
+    allWorkExperience:[{
+        company: {
+            type: String,
+        },
+        designation: {
+            type: String,
+        },
+        startDate : {
+            type : String,
+        },
+        endDate : {
+            type : String,
+        },
+        workDone:{
+            type : String,
+        },
+    }],
+    projects : [{
+        projectTitle:{
+            type : String,
+        },
+        projectStartDate : {
+            type : String,
+        },
+        projectEndDate : {
+            type : String,
+        },
+        projectDescription:{
+            type : String,
+        },
+        skillsUsed : [{
+            type : String,
+        }],
+        projectUrl : {
+            type : String,
+        },
+    }],
+    certification : [{
+        certificationName:{
+            type : String,
+        },
+        certificationDate:{
+            type : String,
+        },
+        certificationIssuer:{
+            type : String,
+        },
+        certificationUrl:{
+            type : String,
+        },
+        certificationValidityDate:{
+            type : String,
+        }
+    }],
+    acheivements : [{
+        type : String,
+    }],
     userId : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',

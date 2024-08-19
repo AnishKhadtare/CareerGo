@@ -2,8 +2,17 @@ import { User } from "../models/user.model.js";
 import { RecruiterProfile } from "../models/recruiterProfile.model.js";
 import { RecruiterPostSchema } from "../models/recruiterPost.model.js";
 import { CandidateProfile } from "../models/candidateProfile.model.js";
-
+import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import { Otp } from "../models/userOTP.model.js";
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+})
 
 const generateRefreshAccessToken = async (userId) => {
     const user = await User.findById(userId);
@@ -76,6 +85,37 @@ const userRegister = async(req, res) => {
 
         const candidate = await User.create({email, password: hashedPassword, firstName, lastName, role});
 
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        
+        const emailExists = await Otp.findOne({email});
+
+        if(emailExists){
+            await otp.findByIdAndUpdate(emailExists._id, {
+                otp : otp,
+            },{new : true})
+        }
+
+        else{
+            await Otp.create({email, otp});
+        }
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Sending OTP for login",
+            text: `Your OTP is ${otp}`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return res.status(400).json({ message: "Email not sent" });
+            } else {
+                console.log("Email sent:", info.response);
+                return res.status(200).json({ message: "OTP sent successfully.", otpData });
+            }
+        });
+
         res.status(200).json({message : "User registered Successfully", candidate});
     }
     catch(error){
@@ -144,4 +184,23 @@ const changePassword = async(req, res) => {
     }
 }
 
-export {userLogin, userRegister, userLogout, userAccountDelete, changePassword};
+const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        const otpRecord = await Otp.findOne({ email });
+        if (!otpRecord || otpRecord.otp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        // OTP is valid, proceed with the next steps (e.g., activate the user's account)
+        await Otp.deleteOne({ email }); // Remove OTP after successful verification
+
+        return res.status(200).json({ message: "OTP verified successfully" });
+    } catch (error) {
+        return res.status(400).json({ message: `Error occurred during OTP verification: ${error.message}` });
+    }
+};
+
+
+export {userLogin, userRegister, userLogout, userAccountDelete, changePassword, verifyOtp};
