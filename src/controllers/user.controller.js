@@ -193,11 +193,11 @@ const verifyOtp = async (req, res) => {
             return res.status(400).json({ message: "Invalid OTP" });
         }
 
-        // OTP is valid, proceed with the next steps (e.g., activate the user's account)
-        await Otp.deleteOne({ email }); // Remove OTP after successful verification
+        await Otp.deleteOne({ email });
 
         return res.status(200).json({ message: "OTP verified successfully" });
-    } catch (error) {
+    }
+    catch (error) {
         return res.status(400).json({ message: `Error occurred during OTP verification: ${error.message}` });
     }
 };

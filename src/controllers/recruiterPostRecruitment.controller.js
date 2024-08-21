@@ -1,3 +1,4 @@
+import { AppliedJob } from "../models/candidateApplyJob.model.js";
 import { RecruiterPostSchema } from "../models/recruiterPost.model.js";
 
 const postRecruitment = async(req, res) => {
@@ -45,7 +46,7 @@ const postRecruitment = async(req, res) => {
     }
 }
 
-const getAllPostedRecruitment = async (req, res) => {
+const getAllPostedRecruitmentByRecruiter = async (req, res) => {
     try{
         const userId = req.user._id;
         const postedRecruitment = await RecruiterPostSchema.find({userId});
@@ -59,4 +60,21 @@ const getAllPostedRecruitment = async (req, res) => {
     }
 }
 
-export {postRecruitment, getAllPostedRecruitment};
+const getAllCandidatesApplications = async(req, res) => {
+    try{
+        const jobId = req.params.id;
+        const candidateApplication = await AppliedJob.find({jobId});
+        if(!candidateApplication){
+            return res.status(404).json({message: "No application found."});
+        }
+        res.status(200).json({
+            message : "Candidate application found successfully",
+            candidateApplication,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export {postRecruitment, getAllPostedRecruitmentByRecruiter, getAllCandidatesApplications};

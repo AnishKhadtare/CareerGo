@@ -7,19 +7,21 @@ cloudinary.config({                                             /* Adding the cl
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
-    try{
-        if(!localFilePath)  return null;
-        const response = await cloudinary.uploader.upload(localFilePath, {          /* Uploading files to cloudinary */
-            resource_type: "auto"
-        });
-        fs.unlinkSync(localFilePath);
-        return response;
-    }
-    catch(error){
-        fs.unlinkSync(localFilePath);
-        return null;
-    }
-}
+const uploadOnCloudinary = (filePath) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      filePath,{
+        resource_type: 'auto',
+      },  // Explicitly set the resource_type to 'raw'
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
 
 export {uploadOnCloudinary}
