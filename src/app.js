@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from 'cookie-parser';
 import cookieSession from "cookie-session";
+import bodyParser from "body-parser";
 
 import candidateRoutes from "./routes/candidate.routes.js";
 import recruiterRoutes from "./routes/recruiter.routes.js";
@@ -24,6 +25,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use(cookieSession({
   name: 'session',

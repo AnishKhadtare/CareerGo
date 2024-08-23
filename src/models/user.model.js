@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         enum : ["Candidate", "Recruiter"],
         required : true,
     },
-    profilePic : {
+    profilePhoto : {
         type : String,
     },
     refreshToken : {

@@ -13,7 +13,7 @@ const candidateCreateProfile = async (req, res) => {
             preferedJobType, preferedWorkMode,
             dateOfBirth, preferedLocations, education,
             profileSummary, allWorkExperience, projects,
-            certification, acheivements
+            certification, acheivements,
         } = req.body;
 
         if(

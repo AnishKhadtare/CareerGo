@@ -10,7 +10,7 @@ import { verifyCandidate, verifyUser } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/create/profile").post(verifyUser, verifyCandidate, candidateCreateProfile);
+router.route("/create/profile").post(verifyUser, verifyCandidate, imageUpload.single('profilePhoto'), candidateCreateProfile);
 router.route("/get/profile").get(verifyUser, verifyCandidate, candidateGetProfile);
 router.route("/update/profile").post(verifyUser, verifyCandidate, candidateUpdateProfile);
 router.route("/allRecruitments").get(verifyUser, verifyCandidate, getAllRecruitments);
