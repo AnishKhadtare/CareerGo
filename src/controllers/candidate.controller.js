@@ -26,6 +26,11 @@ const candidateCreateProfile = async (req, res) => {
         ){
             return res.status(400).json({message: "Please fill in all fields."});
         }
+        
+        const profilePhoto = req.file.profilePhoto;
+        const uploadedPhoto = await uploadOnCloudinary(profilePhoto.path);
+        const profilePhotoUrl = uploadedPhoto.secure_url;
+
         const emailAddress = req.user.email;
 
         const user = await User.find({emailAddress});
@@ -51,6 +56,10 @@ const candidateCreateProfile = async (req, res) => {
             certification, acheivements,
             userId : userId,
         });
+
+        user.profilePhoto = profilePhotoUrl;
+        await user.save();
+
         res.status(200).json({message : "Candidate profile created successfully", createdProfile});
     } 
     catch (error) {
